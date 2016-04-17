@@ -7,17 +7,6 @@ Load libraries
 
 ```r
 library(data.table)
-```
-
-```
-## data.table 1.9.6  For help type ?data.table or https://github.com/Rdatatable/data.table/wiki
-```
-
-```
-## The fastest way to learn (by data.table authors): https://www.datacamp.com/courses/data-analysis-the-data-table-way
-```
-
-```r
 library(lattice)
 ```
 
@@ -141,31 +130,31 @@ Note that there are a number of days/intervals where there are missing values (c
 The total number of missing values in the dataset: 2304
 
 2. Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
-To make it easy and simple, replace the missing values with 0.
+```
+  Mean of steps by date willl be used for the missing value
+```
 
 3. Create a new dataset that is equal to the original dataset but with the missing data filled in.
 
 ```r
   na_dt <- DT
-  
-  #Fill in the missing value simple with 0
-  na_dt[is.na(steps), steps:= 0]
+  na_dt[, steps:= replace(steps, is.na(steps), as.integer(mean(steps, na.rm=TRUE))), by=date]
   print(na_dt)
 ```
 
 ```
 ##        steps       date interval
-##     1:     0 2012-10-01        0
-##     2:     0 2012-10-01        5
-##     3:     0 2012-10-01       10
-##     4:     0 2012-10-01       15
-##     5:     0 2012-10-01       20
+##     1:    NA 2012-10-01        0
+##     2:    NA 2012-10-01        5
+##     3:    NA 2012-10-01       10
+##     4:    NA 2012-10-01       15
+##     5:    NA 2012-10-01       20
 ##    ---                          
-## 17564:     0 2012-11-30     2335
-## 17565:     0 2012-11-30     2340
-## 17566:     0 2012-11-30     2345
-## 17567:     0 2012-11-30     2350
-## 17568:     0 2012-11-30     2355
+## 17564:    NA 2012-11-30     2335
+## 17565:    NA 2012-11-30     2340
+## 17566:    NA 2012-11-30     2345
+## 17567:    NA 2012-11-30     2350
+## 17568:    NA 2012-11-30     2355
 ```
 
 4. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
@@ -188,7 +177,9 @@ For this part the weekdays() function may be of some help here. Use the dataset 
 
 ```r
   #as.POSIXlt(DT$date)$wday returns index of weekdays: staring on Sunday
-  typeOfDay <- factor(as.POSIXlt(DT$date)$wday %in% c(0,6), levels=c(FALSE, TRUE), labels = c("weekend", "weekday"))
+  typeOfDay <- factor(as.POSIXlt(DT$date)$wday %in% c(0,6), 
+                      levels=c(FALSE, TRUE), 
+                      labels = c("weekend", "weekday"))
   dt4 <- DT
   dt4[, daytype:=typeOfDay]
   
@@ -197,17 +188,17 @@ For this part the weekdays() function may be of some help here. Use the dataset 
 
 ```
 ##        steps       date interval daytype
-##     1:     0 2012-10-01        0 weekend
-##     2:     0 2012-10-01        5 weekend
-##     3:     0 2012-10-01       10 weekend
-##     4:     0 2012-10-01       15 weekend
-##     5:     0 2012-10-01       20 weekend
+##     1:    NA 2012-10-01        0 weekend
+##     2:    NA 2012-10-01        5 weekend
+##     3:    NA 2012-10-01       10 weekend
+##     4:    NA 2012-10-01       15 weekend
+##     5:    NA 2012-10-01       20 weekend
 ##    ---                                  
-## 17564:     0 2012-11-30     2335 weekend
-## 17565:     0 2012-11-30     2340 weekend
-## 17566:     0 2012-11-30     2345 weekend
-## 17567:     0 2012-11-30     2350 weekend
-## 17568:     0 2012-11-30     2355 weekend
+## 17564:    NA 2012-11-30     2335 weekend
+## 17565:    NA 2012-11-30     2340 weekend
+## 17566:    NA 2012-11-30     2345 weekend
+## 17567:    NA 2012-11-30     2350 weekend
+## 17568:    NA 2012-11-30     2355 weekend
 ```
 
 2. Make a panel plot containing a time series plot (i.e. 𝚝𝚢𝚙𝚎 = "𝚕") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data.
@@ -218,18 +209,18 @@ For this part the weekdays() function may be of some help here. Use the dataset 
 ```
 
 ```
-##      interval daytype  mean_steps
-##   1:        0 weekend  2.02222222
-##   2:        5 weekend  0.40000000
-##   3:       10 weekend  0.15555556
-##   4:       15 weekend  0.17777778
-##   5:       20 weekend  0.08888889
-##  ---                             
-## 572:     2335 weekday 11.00000000
-## 573:     2340 weekday  5.87500000
-## 574:     2345 weekday  1.62500000
-## 575:     2350 weekday  0.00000000
-## 576:     2355 weekday  0.00000000
+##      interval daytype mean_steps
+##   1:        0 weekend  2.3333333
+##   2:        5 weekend  0.4615385
+##   3:       10 weekend  0.1794872
+##   4:       15 weekend  0.2051282
+##   5:       20 weekend  0.1025641
+##  ---                            
+## 572:     2335 weekday 12.5714286
+## 573:     2340 weekday  6.7142857
+## 574:     2345 weekday  1.8571429
+## 575:     2350 weekday  0.0000000
+## 576:     2355 weekday  0.0000000
 ```
 
 ```r
