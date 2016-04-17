@@ -81,14 +81,14 @@ Note that there are a number of days/intervals where there are missing values (c
 The total number of missing values in the dataset: `r sum(is.na(DT))`
 
 2. Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
-To make it easy and simple, replace the missing values with 0.
+```
+  Mean of steps by date willl be used for the missing value
+```
 
 3. Create a new dataset that is equal to the original dataset but with the missing data filled in.
 ```{r}
   na_dt <- DT
-  
-  #Fill in the missing value simple with 0
-  na_dt[is.na(steps), steps:= 0]
+  na_dt[, steps:= replace(steps, is.na(steps), as.integer(mean(steps, na.rm=TRUE))), by=date]
   print(na_dt)
 ``` 
 
@@ -108,7 +108,9 @@ For this part the weekdays() function may be of some help here. Use the dataset 
 1. Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
 ```{r}
   #as.POSIXlt(DT$date)$wday returns index of weekdays: staring on Sunday
-  typeOfDay <- factor(as.POSIXlt(DT$date)$wday %in% c(0,6), levels=c(FALSE, TRUE), labels = c("weekend", "weekday"))
+  typeOfDay <- factor(as.POSIXlt(DT$date)$wday %in% c(0,6), 
+                      levels=c(FALSE, TRUE), 
+                      labels = c("weekend", "weekday"))
   dt4 <- DT
   dt4[, daytype:=typeOfDay]
   
